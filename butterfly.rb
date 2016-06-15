@@ -40,10 +40,9 @@ class Butterfly < Gosu::Window
   end
 
   def draw_square(x,y,size)
-    draw_line x,      y,      0xff000000, x+size, y,      0xff00ff00
-    draw_line x+size, y,      0xff000000, x+size, y+size, 0xff00ff00
-    draw_line x+size, y+size, 0xff000000, x,      y+size, 0xff00ff00
-    draw_line x,      y+size, 0xff000000, x,      y,      0xff00ff00
+
+    draw_quad(x,      y,      0xff008800, x+size, y,      0xff008800,
+              x+size, y+size, 0xff008800, x,      y+size, 0xff008800)
   end
 end
 
