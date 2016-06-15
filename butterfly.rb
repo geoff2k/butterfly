@@ -1,51 +1,76 @@
 require "gosu"
 
+WINDOW_WIDTH  = 1280
+WINDOW_HEIGHT = 1024
+BOX_SIZE      = 256
+
+
 class Butterfly < Gosu::Window
   def initialize
-    super(800,600)
+    super(WINDOW_WIDTH, WINDOW_HEIGHT)
     self.caption = "Butterfly!"
+
+    @caterpillar = Caterpillar.new
+    @egg1        = Egg.new(:black)
+    @egg2        = Egg.new(:yellow)
+    @incubator   = Incubator.new
+    @leaf_spot   = LeafSpot.new
   end
 
   def draw
-    size = 200
+    size = BOX_SIZE
     y = 0
     loop do
       x = 0
       loop do
         draw_square(x, y, size)
         x += size
-        break if x >= 800
+        break if x >= WINDOW_WIDTH
       end
       y += size
-      break if y >= 600
+      break if y >= WINDOW_HEIGHT
     end
+ 
+    @caterpillar.draw(100, 100, 1)
+           @egg1.draw(600, 100, 1)
+           @egg2.draw(900, 100, 1)
+      @incubator.draw(100, 300, 1)
+      @leaf_spot.draw(900, 300, 1)
   end
 
   def draw_square(x,y,size)
-    draw_quad(x, y, 0xffffffff, x+size, y, 0xff000000, x+size, y+size, 0x00ff0000, x, y+size, 0x0000ff00)
+    draw_line x,      y,      0xff000000, x+size, y,      0xff00ff00
+    draw_line x+size, y,      0xff000000, x+size, y+size, 0xff00ff00
+    draw_line x+size, y+size, 0xff000000, x,      y+size, 0xff00ff00
+    draw_line x,      y+size, 0xff000000, x,      y,      0xff00ff00
   end
 end
 
-class Incubator < Gosu::Image
-  def initialize(path)
-    super(path)
-  end
-end
-
-class LeafSpot < Gosu::Image
-  def initialize(path)
+class Caterpillar < Gosu::Image
+  def initialize
+    path = "images/black_caterpillar_1.png"
     super(path)
   end
 end
 
 class Egg < Gosu::Image
-  def initialize(path)
+  def initialize(type)
+    path = "images/black_egg_1.png"  if type == :black
+    path = "images/yellow_egg_1.png" if type == :yellow
     super(path)
   end
 end
 
-class Caterpillar < Gosu::Image
-  def initialize(path)
+class Incubator < Gosu::Image
+  def initialize
+    path = "images/incubator_1.png"
+    super(path)
+  end
+end
+
+class LeafSpot < Gosu::Image
+  def initialize
+    path = "images/leaf_spot_1.png"
     super(path)
   end
 end
