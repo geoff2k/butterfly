@@ -1,7 +1,7 @@
 require "gosu"
 
 WINDOW_WIDTH  = 1280
-WINDOW_HEIGHT = 1024
+WINDOW_HEIGHT = 768
 BOX_SIZE      = 256
 
 
@@ -34,8 +34,9 @@ class Butterfly < Gosu::Window
     @caterpillar.draw(100, 100, 1)
            @egg1.draw(600, 100, 1)
            @egg2.draw(900, 100, 1)
-      @incubator.draw(100, 300, 1)
-      @leaf_spot.draw(900, 300, 1)
+
+      @incubator.draw_static
+      @leaf_spot.draw_static
   end
 
   def draw_square(x,y,size)
@@ -66,12 +67,28 @@ class Incubator < Gosu::Image
     path = "images/incubator_1.png"
     super(path)
   end
+
+  def draw_static
+    width = BOX_SIZE
+    height = BOX_SIZE
+    x = BOX_SIZE * 1
+    y = BOX_SIZE * 1
+    draw(x, y, 1)
+  end
 end
 
 class LeafSpot < Gosu::Image
   def initialize
     path = "images/leaf_spot_1.png"
     super(path)
+  end
+
+  def draw_static
+    width = BOX_SIZE
+    height = BOX_SIZE
+    x = BOX_SIZE * 3
+    y = BOX_SIZE * 1
+    draw(x, y, 1)
   end
 end
 
