@@ -11,7 +11,8 @@ class Butterfly < Gosu::Window
     self.caption = "Butterfly!"
 
     @caterpillar = Caterpillar.new
-    @egg         = Egg.new
+    @egg1        = Egg.new(:black)
+    @egg2        = Egg.new(:yellow)
     @incubator   = Incubator.new
     @leaf_spot   = LeafSpot.new
   end
@@ -31,7 +32,8 @@ class Butterfly < Gosu::Window
     end
  
     @caterpillar.draw(100, 100, 1)
-            @egg.draw(600, 100, 1)
+           @egg1.draw(600, 100, 1)
+           @egg2.draw(900, 100, 1)
       @incubator.draw(100, 300, 1)
       @leaf_spot.draw(900, 300, 1)
   end
@@ -52,9 +54,9 @@ class Caterpillar < Gosu::Image
 end
 
 class Egg < Gosu::Image
-  def initialize
-    path = "images/black_egg_1.png"
-    path = "images/yellow_egg_1.png"
+  def initialize(type)
+    path = "images/black_egg_1.png"  if type == :black
+    path = "images/yellow_egg_1.png" if type == :yellow
     super(path)
   end
 end
