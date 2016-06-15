@@ -15,9 +15,23 @@ class Butterfly < Gosu::Window
     @egg2        = Egg.new(:yellow)
     @incubator   = Incubator.new
     @leaf_spot   = LeafSpot.new
+
+    @all_sprites = [
+      @caterpillar, 
+      @egg1,
+      @egg2,
+      @incubator,
+      @leaf_spot,
+    ]
+  end
+
+  # Show the system cursor
+  def needs_cursor?
+    true
   end
 
   def draw
+
     size = BOX_SIZE
     y = 0
     loop do
@@ -39,14 +53,32 @@ class Butterfly < Gosu::Window
       @leaf_spot.draw_static
   end
 
-  def draw_square(x,y,size)
+  def button_down(id)
+    if id == Gosu::MsLeft
+      @all_sprites.each do |sprite|
+        sprite.clicked?(mouse_x, mouse_y)
+      end
+    end
+  end
 
-    draw_quad(x,      y,      0xff008800, x+size, y,      0xff008800,
-              x+size, y+size, 0xff008800, x,      y+size, 0xff008800)
+  def draw_square(x,y,size)
+    draw_quad(
+      x,      y,      0xff008800, 
+      x+size, y,      0xff008800, 
+      x+size, y+size, 0xff008800, 
+      x,      y+size, 0xff008800
+    )
+  end
+end
+
+module Clicked
+  def clicked?(x,y)
+    puts "#{self.class} #{x},#{y}"
   end
 end
 
 class Caterpillar < Gosu::Image
+  include Clicked
   def initialize
     path = "images/black_caterpillar_1.png"
     super(path)
@@ -54,6 +86,7 @@ class Caterpillar < Gosu::Image
 end
 
 class Egg < Gosu::Image
+  include Clicked
   def initialize(type)
     path = "images/black_egg_1.png"  if type == :black
     path = "images/yellow_egg_1.png" if type == :yellow
@@ -62,6 +95,7 @@ class Egg < Gosu::Image
 end
 
 class Incubator < Gosu::Image
+  include Clicked
   def initialize
     path = "images/incubator_1.png"
     super(path)
@@ -77,6 +111,7 @@ class Incubator < Gosu::Image
 end
 
 class LeafSpot < Gosu::Image
+  include Clicked
   def initialize
     path = "images/leaf_spot_1.png"
     super(path)
