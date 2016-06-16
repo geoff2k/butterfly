@@ -11,16 +11,14 @@ class Butterfly < Gosu::Window
     self.caption = "Butterfly!"
 
     @caterpillar = Caterpillar.new(show: false)
-    @egg1        = Egg.new(:black, show: false)
-    @egg2        = Egg.new(:yellow, show: false)
+    @egg         = Egg.new(:black, show: false)
 
-    @incubator   = Incubator.new
+    @incubator   = Incubator.new(@egg)
     @leaf_spot   = LeafSpot.new
 
     @all_sprites = [
       @caterpillar, 
-      @egg1,
-      @egg2,
+      @egg,
       @incubator,
       @leaf_spot,
     ]
@@ -31,8 +29,7 @@ class Butterfly < Gosu::Window
     true
   end
 
-  def upate
-    puts "#update"
+  def update
   end
 
   def draw
@@ -50,19 +47,10 @@ class Butterfly < Gosu::Window
     end
  
     @caterpillar.draw_dynamic(100, 100)
-           @egg1.draw_dynamic(600, 100)
-           @egg2.draw_dynamic(900, 100)
+            @egg.draw_dynamic(600, 100)
 
       @incubator.draw_static
       @leaf_spot.draw_static
-  end
-
-  def button_down(id)
-    if id == Gosu::MsLeft
-      @all_sprites.each do |sprite|
-        sprite.clicked?(mouse_x, mouse_y)
-      end
-    end
   end
 
   def draw_square(x,y,size)
@@ -73,8 +61,17 @@ class Butterfly < Gosu::Window
       x,      y+size, 0xff008800
     )
   end
+
+  def button_down(id)
+    if id == Gosu::MsLeft
+      @all_sprites.each do |sprite|
+        sprite.clicked?(mouse_x, mouse_y)
+      end
+    end
+  end
 end
 
+# Module that allows rectangular sprites to tell whether they have bee clicked
 module Clicked
   def clicked?(click_x, click_y)
     return false if x.nil? || y.nil?
@@ -85,10 +82,14 @@ module Clicked
     return false if click_x > (x + width)
     return false if click_y < y
     return false if click_y > (y + height)
+
     puts "*** #{self.to_s} CLICKED! ***"
+
+    perform_click_action
   end
 end
 
+# Module for sprites that will be drawn dynamically
 module DrawDynamic
   def show?
     @show == true
@@ -103,6 +104,12 @@ module DrawDynamic
   end
 end
 
+module Container
+  def full?
+  end
+end
+
+# Caterpillar sprite
 class Caterpillar < Gosu::Image
   include Clicked
   include DrawDynamic
@@ -121,6 +128,7 @@ class Caterpillar < Gosu::Image
   end
 end
 
+# Egg sprite
 class Egg < Gosu::Image
   include Clicked
   include DrawDynamic
@@ -136,18 +144,27 @@ class Egg < Gosu::Image
     super(path)
   end
 
+  def show=(value)
+    @show = value
+  end
+
   def to_s
     "#{self.class} #{@type}"
   end
 end
 
+# Incubator sprite
 class Incubator < Gosu::Image
   include Clicked
 
   attr_reader :x, :y, :width, :height
 
-  def initialize
+  attr_reader :has_egg
+
+  def initialize(egg)
     @x, @y, @width, @height = [ BOX_SIZE * 1, BOX_SIZE * 1, BOX_SIZE, BOX_SIZE ]
+    @has_egg = false
+    @egg = egg
     path = "images/incubator_1.png"
     super(path)
   end
@@ -159,8 +176,15 @@ class Incubator < Gosu::Image
   def to_s
     self.class
   end
+
+  def perform_click_action
+    return if @has_egg
+    @has_egg = true
+    @egg.show = true
+  end
 end
 
+# Leafspot sprite
 class LeafSpot < Gosu::Image
   include Clicked
 
