@@ -45,9 +45,9 @@ class Butterfly < Gosu::Window
       break if y >= WINDOW_HEIGHT
     end
  
-    @caterpillar.draw(100, 100, 1)
-           @egg1.draw(600, 100, 1)
-           @egg2.draw(900, 100, 1)
+    @caterpillar.draw_dynamic(100, 100)
+           @egg1.draw_dynamic(600, 100)
+           @egg2.draw_dynamic(900, 100)
 
       @incubator.draw_static
       @leaf_spot.draw_static
@@ -72,14 +72,33 @@ class Butterfly < Gosu::Window
 end
 
 module Clicked
-  def clicked?(x,y)
+  def clicked?(click_x, click_y)
     puts "#{self.class} #{x},#{y}"
+
+    return false if click_x < x
+    return false if click_x > (x + width)
+    return false if click_y < y
+    return false if click_y > (y + height)
+    puts "*** #{self.class} CLICKED! ***"
+  end
+end
+
+module DrawDynamic
+  def draw_dynamic(x,y)
+    @x = x
+    @y = y
+    draw(x,y,1)
   end
 end
 
 class Caterpillar < Gosu::Image
   include Clicked
+  include DrawDynamic
+
+  attr_reader :x, :y, :width, :height
+
   def initialize
+    @width, @height = [ 248, 91 ]
     path = "images/black_caterpillar_1.png"
     super(path)
   end
@@ -87,41 +106,52 @@ end
 
 class Egg < Gosu::Image
   include Clicked
+  include DrawDynamic
+
+  attr_reader :x, :y, :width, :height
+
   def initialize(type)
+    @width, @height = [ 94, 180 ]
     path = "images/black_egg_1.png"  if type == :black
     path = "images/yellow_egg_1.png" if type == :yellow
     super(path)
+  end
+
+  def draw_dynamic(x,y)
+    @x = x
+    @y = y
+    draw(x,y,1)
   end
 end
 
 class Incubator < Gosu::Image
   include Clicked
+
+  attr_reader :x, :y, :width, :height
+
   def initialize
+    @x, @y, @width, @height = [ BOX_SIZE * 1, BOX_SIZE * 1, BOX_SIZE, BOX_SIZE ]
     path = "images/incubator_1.png"
     super(path)
   end
 
   def draw_static
-    width = BOX_SIZE
-    height = BOX_SIZE
-    x = BOX_SIZE * 1
-    y = BOX_SIZE * 1
     draw(x, y, 1)
   end
 end
 
 class LeafSpot < Gosu::Image
   include Clicked
+
+  attr_reader :x, :y, :width, :height
+
   def initialize
+    @x, @y, @width, @height = [ BOX_SIZE * 3, BOX_SIZE * 1, BOX_SIZE, BOX_SIZE ]
     path = "images/leaf_spot_1.png"
     super(path)
   end
 
   def draw_static
-    width = BOX_SIZE
-    height = BOX_SIZE
-    x = BOX_SIZE * 3
-    y = BOX_SIZE * 1
     draw(x, y, 1)
   end
 end
