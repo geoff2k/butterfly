@@ -47,7 +47,7 @@ class Butterfly < Gosu::Window
     end
  
     @caterpillar.draw_dynamic(100, 100)
-            @egg.draw_dynamic(600, 100)
+            @egg.draw_dynamic(337, 294)
 
       @incubator.draw_static
       @leaf_spot.draw_static
@@ -152,6 +152,7 @@ class Egg < Gosu::Image
     "#{self.class} #{@type}"
   end
 end
+
 
 # Incubator sprite
 class Incubator < Gosu::Image
