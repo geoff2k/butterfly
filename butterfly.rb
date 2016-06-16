@@ -60,7 +60,7 @@ class Butterfly < Gosu::Window
       @incubator.draw_static
       @leaf_spot.draw_static
 
-          @timer.draw_dynamic(1,1)
+          @timer.draw_dynamic(370,472)
   end
 
   def draw_square(x,y,size)
