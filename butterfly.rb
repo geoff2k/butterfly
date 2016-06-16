@@ -10,9 +10,10 @@ class Butterfly < Gosu::Window
     super(WINDOW_WIDTH, WINDOW_HEIGHT)
     self.caption = "Butterfly!"
 
-    @caterpillar = Caterpillar.new
-    @egg1        = Egg.new(:black)
-    @egg2        = Egg.new(:yellow)
+    @caterpillar = Caterpillar.new(show: false)
+    @egg1        = Egg.new(:black, show: false)
+    @egg2        = Egg.new(:yellow, show: false)
+
     @incubator   = Incubator.new
     @leaf_spot   = LeafSpot.new
 
@@ -30,8 +31,11 @@ class Butterfly < Gosu::Window
     true
   end
 
-  def draw
+  def upate
+    puts "#update"
+  end
 
+  def draw
     size = BOX_SIZE
     y = 0
     loop do
@@ -73,6 +77,8 @@ end
 
 module Clicked
   def clicked?(click_x, click_y)
+    return false if x.nil? || y.nil?
+
     puts "#{self.to_s} #{x},#{y}"
 
     return false if click_x < x
@@ -84,7 +90,13 @@ module Clicked
 end
 
 module DrawDynamic
+  def show?
+    @show == true
+  end
+
   def draw_dynamic(x,y)
+    return if !show?
+
     @x = x
     @y = y
     draw(x,y,1)
@@ -97,7 +109,8 @@ class Caterpillar < Gosu::Image
 
   attr_reader :x, :y, :width, :height
 
-  def initialize
+  def initialize(show:)
+    @show = show
     @width, @height = [ 248, 91 ]
     path = "images/black_caterpillar_1.png"
     super(path)
@@ -114,18 +127,13 @@ class Egg < Gosu::Image
 
   attr_reader :x, :y, :width, :height
 
-  def initialize(type)
+  def initialize(type, show:)
     @type = type
+    @show = show
     @width, @height = [ 94, 180 ]
     path = "images/black_egg_1.png"  if @type == :black
     path = "images/yellow_egg_1.png" if @type == :yellow
     super(path)
-  end
-
-  def draw_dynamic(x,y)
-    @x = x
-    @y = y
-    draw(x,y,1)
   end
 
   def to_s
