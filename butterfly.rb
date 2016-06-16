@@ -73,13 +73,13 @@ end
 
 module Clicked
   def clicked?(click_x, click_y)
-    puts "#{self.class} #{x},#{y}"
+    puts "#{self.to_s} #{x},#{y}"
 
     return false if click_x < x
     return false if click_x > (x + width)
     return false if click_y < y
     return false if click_y > (y + height)
-    puts "*** #{self.class} CLICKED! ***"
+    puts "*** #{self.to_s} CLICKED! ***"
   end
 end
 
@@ -102,6 +102,10 @@ class Caterpillar < Gosu::Image
     path = "images/black_caterpillar_1.png"
     super(path)
   end
+
+  def to_s
+    self.class
+  end
 end
 
 class Egg < Gosu::Image
@@ -111,9 +115,10 @@ class Egg < Gosu::Image
   attr_reader :x, :y, :width, :height
 
   def initialize(type)
+    @type = type
     @width, @height = [ 94, 180 ]
-    path = "images/black_egg_1.png"  if type == :black
-    path = "images/yellow_egg_1.png" if type == :yellow
+    path = "images/black_egg_1.png"  if @type == :black
+    path = "images/yellow_egg_1.png" if @type == :yellow
     super(path)
   end
 
@@ -121,6 +126,10 @@ class Egg < Gosu::Image
     @x = x
     @y = y
     draw(x,y,1)
+  end
+
+  def to_s
+    "#{self.class} #{@type}"
   end
 end
 
@@ -138,6 +147,10 @@ class Incubator < Gosu::Image
   def draw_static
     draw(x, y, 1)
   end
+
+  def to_s
+    self.class
+  end
 end
 
 class LeafSpot < Gosu::Image
@@ -153,6 +166,10 @@ class LeafSpot < Gosu::Image
 
   def draw_static
     draw(x, y, 1)
+  end
+
+  def to_s
+    self.class
   end
 end
 
