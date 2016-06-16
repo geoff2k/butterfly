@@ -16,12 +16,17 @@ class Butterfly < Gosu::Window
     @incubator   = Incubator.new(@egg)
     @leaf_spot   = LeafSpot.new
 
+    font = Gosu::Font.new(30)
+
+    @timer = Timer.new(font, seconds: 10)
+
     @all_sprites = [
       @caterpillar, 
       @egg,
       @incubator,
       @leaf_spot,
     ]
+
   end
 
   # Show the system cursor
@@ -51,6 +56,8 @@ class Butterfly < Gosu::Window
 
       @incubator.draw_static
       @leaf_spot.draw_static
+
+          @timer.draw_dynamic(1,1)
   end
 
   def draw_square(x,y,size)
@@ -95,12 +102,13 @@ module DrawDynamic
     @show == true
   end
 
-  def draw_dynamic(x,y)
+  def draw_dynamic(x_new, y_new)
     return if !show?
 
-    @x = x
-    @y = y
-    draw(x,y,1)
+    @x = x_new
+    @y = y_new
+
+    draw(x, y, 1)
   end
 end
 
@@ -109,12 +117,21 @@ module Container
   end
 end
 
+module ClassBasedToString
+  def to_s
+    self.class
+  end
+end
+
+module Drawable
+  attr_reader :x, :y, :width, :height
+end
+
 # Caterpillar sprite
 class Caterpillar < Gosu::Image
-  include Clicked
+  include Drawable
   include DrawDynamic
-
-  attr_reader :x, :y, :width, :height
+  include Clicked
 
   def initialize(show:)
     @show = show
@@ -130,10 +147,9 @@ end
 
 # Egg sprite
 class Egg < Gosu::Image
+  include Drawable
   include Clicked
   include DrawDynamic
-
-  attr_reader :x, :y, :width, :height
 
   def initialize(type, show:)
     @type = type
@@ -156,9 +172,9 @@ end
 
 # Incubator sprite
 class Incubator < Gosu::Image
+  include Drawable
   include Clicked
-
-  attr_reader :x, :y, :width, :height
+  include ClassBasedToString
 
   attr_reader :has_egg
 
@@ -174,10 +190,6 @@ class Incubator < Gosu::Image
     draw(x, y, 1)
   end
 
-  def to_s
-    self.class
-  end
-
   def perform_click_action
     return if @has_egg
     @has_egg = true
@@ -187,9 +199,9 @@ end
 
 # Leafspot sprite
 class LeafSpot < Gosu::Image
+  include Drawable
   include Clicked
-
-  attr_reader :x, :y, :width, :height
+  include ClassBasedToString
 
   def initialize
     @x, @y, @width, @height = [ BOX_SIZE * 3, BOX_SIZE * 1, BOX_SIZE, BOX_SIZE ]
@@ -200,9 +212,30 @@ class LeafSpot < Gosu::Image
   def draw_static
     draw(x, y, 1)
   end
+end
 
-  def to_s
-    self.class
+class Timer
+  include Drawable
+  include DrawDynamic
+
+  def initialize(font, seconds:)
+    @font = font
+    @seconds = seconds
+    @show = true
+
+    @iv = Gosu.milliseconds
+  end
+
+  def draw(x, y, opacity)
+    @font.draw(string, x, y, 2)
+  end
+
+  def string
+    now = Gosu.milliseconds
+    milliseconds_since_start = now - @iv
+    seconds_since_start = milliseconds_since_start / 1000
+    number_of_seconds_to_display = @seconds - seconds_since_start
+    number_of_seconds_to_display.to_s
   end
 end
 
