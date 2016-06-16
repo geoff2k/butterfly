@@ -18,7 +18,7 @@ class Butterfly < Gosu::Window
 
     font = Gosu::Font.new(30)
 
-    @timer = Timer.new(font, seconds: 10)
+    @timer = Timer.new(font, seconds: 10, notified: @egg)
 
     @incubator   = Incubator.new(@egg, @timer)
 
@@ -154,12 +154,22 @@ class Egg < Gosu::Image
   include Clicked
   include DrawDynamic
 
+  def timer_complete
+  end
+
   def initialize(type, show:)
     @type = type
     @show = show
     @width, @height = [ 94, 180 ]
-    path = "images/black_egg_1.png"  if @type == :black
-    path = "images/yellow_egg_1.png" if @type == :yellow
+
+    path = nil
+    if @type == :black
+      path = "images/black_egg_1.png"
+    end
+    if @type == :yellow
+      path = "images/yellow_egg_1.png"
+    end
+
     super(path)
   end
 
@@ -223,9 +233,10 @@ class Timer
   include Drawable
   include DrawDynamic
 
-  def initialize(font, seconds:)
+  def initialize(font, seconds:, notified:)
     @font = font
     @seconds = seconds
+    @notified = notified
   end
 
   def start
@@ -241,6 +252,7 @@ class Timer
     if @show == true
       if number_of_seconds_to_display == 0
         @show = false
+        @notified.timer_complete
       end
     end
   end
