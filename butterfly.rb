@@ -13,12 +13,14 @@ class Butterfly < Gosu::Window
     @caterpillar = Caterpillar.new(show: false)
     @egg         = Egg.new(:black, show: false)
 
-    @incubator   = Incubator.new(@egg)
+
     @leaf_spot   = LeafSpot.new
 
     font = Gosu::Font.new(30)
 
     @timer = Timer.new(font, seconds: 10)
+
+    @incubator   = Incubator.new(@egg, @timer)
 
     @all_sprites = [
       @caterpillar, 
@@ -35,6 +37,7 @@ class Butterfly < Gosu::Window
   end
 
   def update
+    @timer.update
   end
 
   def draw
@@ -178,10 +181,11 @@ class Incubator < Gosu::Image
 
   attr_reader :has_egg
 
-  def initialize(egg)
+  def initialize(egg, timer)
     @x, @y, @width, @height = [ BOX_SIZE * 1, BOX_SIZE * 1, BOX_SIZE, BOX_SIZE ]
     @has_egg = false
     @egg = egg
+    @timer = timer
     path = "images/incubator_1.png"
     super(path)
   end
@@ -194,6 +198,7 @@ class Incubator < Gosu::Image
     return if @has_egg
     @has_egg = true
     @egg.show = true
+    @timer.start
   end
 end
 
@@ -221,20 +226,33 @@ class Timer
   def initialize(font, seconds:)
     @font = font
     @seconds = seconds
-    @show = true
+  end
 
-    @iv = Gosu.milliseconds
+  def start
+    @show = true
+    @initial_value = Gosu.milliseconds
   end
 
   def draw(x, y, opacity)
     @font.draw(string, x, y, 2)
   end
 
-  def string
+  def update
+    if @show == true
+      if number_of_seconds_to_display == 0
+        @show = false
+      end
+    end
+  end
+
+  def number_of_seconds_to_display
     now = Gosu.milliseconds
-    milliseconds_since_start = now - @iv
+    milliseconds_since_start = now - @initial_value
     seconds_since_start = milliseconds_since_start / 1000
-    number_of_seconds_to_display = @seconds - seconds_since_start
+    @seconds - seconds_since_start
+  end
+
+  def string
     number_of_seconds_to_display.to_s
   end
 end
